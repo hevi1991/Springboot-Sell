@@ -1,6 +1,7 @@
 package com.hevi.service;
 
 import com.hevi.dataobject.ProductInfo;
+import com.hevi.dto.CartDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,8 +32,15 @@ public interface ProductService {
     ProductInfo save(ProductInfo productInfo);
 
     /**
-     * TODO
-     * 加库存
-     * 减库存
+     * 增加库存
+     * @param cartDTOList
      */
+    void increaseStock(List<CartDTO> cartDTOList);
+
+    /**
+     * 减少库存
+     * @param cartDTOList
+     */
+    void decreaseStock(List<CartDTO> cartDTOList);
+
 }

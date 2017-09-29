@@ -2,17 +2,21 @@ package com.hevi.service.impl;
 
 import com.hevi.dao.ProductInfoDao;
 import com.hevi.dataobject.ProductInfo;
-import com.hevi.enums.ProductStatus;
+import com.hevi.dto.CartDTO;
+import com.hevi.enums.ProductStatusEnum;
+import com.hevi.enums.ResultEnum;
+import com.hevi.exception.SellException;
 import com.hevi.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ProductInfoDao dao;
@@ -24,7 +28,7 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public List<ProductInfo> findUpAll() {
-        return dao.findByProductStatus(ProductStatus.UP.getCode());
+        return dao.findByProductStatus(ProductStatusEnum.UP.getCode());
     }
 
     @Override
@@ -36,5 +40,32 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public ProductInfo save(ProductInfo productInfo) {
         return dao.save(productInfo);
+    }
+
+    @Override
+    @Transactional
+    public void increaseStock(List<CartDTO> cartDTOList) {
+
+    }
+
+    @Override
+    @Transactional
+    public void decreaseStock(List<CartDTO> cartDTOList) {
+        for (CartDTO cartDTO :
+                cartDTOList) {
+            ProductInfo productInfo = dao.findOne(cartDTO.getProductId());
+            if (productInfo == null) {
+                throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
+            }
+
+            Integer result = productInfo.getProductStock() - cartDTO.getProductQuantity();
+            if (result < 0) {
+                throw new SellException(ResultEnum.PRODUCT_STOCK_ERROR);
+            }
+
+            //都没问题就保存
+            productInfo.setProductStock(result);
+            dao.save(productInfo);
+        }
     }
 }
