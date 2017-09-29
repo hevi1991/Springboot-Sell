@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MysellApplication {
 
 	public static void main(String[] args) {
+		//虚拟机lan ip:192.168.1.182
 		SpringApplication.run(MysellApplication.class, args);
 	}
 }
